@@ -1,7 +1,7 @@
 import os
 import aiomysql
 from aiohttp import web
-from board import Region
+from board import Region, Territory
 
 
 async def create_db_pool(app):
@@ -18,7 +18,8 @@ app = web.Application()
 app.on_startup.append(create_db_pool)
 
 app.add_routes([
-        web.get('/v0/get-region', Region.get)
+        web.get('/v0/get-region', Region.get),
+        web.get('/v0/get-territory', Territory.get)
         ])
 
 if __name__ == "__main__":

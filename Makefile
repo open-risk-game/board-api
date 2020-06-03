@@ -6,3 +6,9 @@ export DB_PORT?=3306
 
 run:
 	python app.py
+
+dev-run:
+	adev runserver .
+
+test:
+	pytest -vv
