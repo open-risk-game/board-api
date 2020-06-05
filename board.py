@@ -33,7 +33,8 @@ class Territory:
         self.tokens = tokens
 
     async def get(request):
-        territory_id = 1
+        params = request.rel_url.query
+        territory_id = params['territory_id']
         query = f'''
         SELECT name, tokens, owner, region_id
         FROM territories
@@ -44,6 +45,5 @@ class Territory:
             cursor = await db_conn.cursor(aiomysql.DictCursor)
             await cursor.execute(query)
             result = await cursor.fetchone()
-            data = {'result': result}
 
-        return web.json_response({'territory': data})
+        return web.json_response(result)
