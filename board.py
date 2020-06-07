@@ -1,3 +1,4 @@
+import logging
 import aiomysql
 from aiohttp import web
 
@@ -45,5 +46,12 @@ class Territory:
             cursor = await db_conn.cursor(aiomysql.DictCursor)
             await cursor.execute(query)
             result = await cursor.fetchone()
-
-        return web.json_response(result)
+            if result is not None:
+                logging.info(f'{result}: Found and returned')
+                return web.json_response(result)
+            else:
+                json = {'error': f'territory with id {territory_id} not found',
+                        'status': 404
+                        }
+                logging.info(f'{json}')
+                return web.json_response(json)

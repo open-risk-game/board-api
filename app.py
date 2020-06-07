@@ -1,5 +1,6 @@
 import os
 import aiomysql
+import logging
 from aiohttp import web
 from board import Region, Territory
 
@@ -21,6 +22,9 @@ app.add_routes([
         web.get('/v0/get-region', Region.get),
         web.get('/v0/get-territory', Territory.get)
         ])
+
+logging.basicConfig(filename="board.log", level=logging.INFO)
+logging.info("####Board.api started####")
 
 if __name__ == "__main__":
     web.run_app(app)
