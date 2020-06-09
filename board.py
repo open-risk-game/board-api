@@ -62,7 +62,7 @@ class Territory:
         territory_id = data.get('territory_id')
         query = f'''
         UPDATE territories
-        SET tokens = {tokens}
+        SET tokens = tokens + {tokens}
         WHERE id = {territory_id}
         '''
 
@@ -77,6 +77,6 @@ class Territory:
                 return web.json_response(message, status=404)
             await db_conn.commit()
             message = {
-                    'result': 'update complete for territory-id {territory_id}'
+                    'result': f'updated territory-id {territory_id}'
                     }
             return web.json_response(message, status=200)
