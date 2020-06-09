@@ -20,7 +20,8 @@ app.on_startup.append(create_db_pool)
 
 app.add_routes([
         web.get('/v0/get-region', Region.get),
-        web.get('/v0/get-territory', Territory.get)
+        web.get('/v0/get-territory', Territory.get),
+        web.patch('/v0/add-tokens', Territory.add_tokens),
         ])
 
 logging.basicConfig(
@@ -28,7 +29,6 @@ logging.basicConfig(
         format='%(asctime)s - %(message)s',
         level=logging.INFO
         )
-logging.info("####Board.api started####")
 
 if __name__ == "__main__":
     web.run_app(app)

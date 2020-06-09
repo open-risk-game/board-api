@@ -48,10 +48,35 @@ class Territory:
             result = await cursor.fetchone()
             if result is not None:
                 logging.info(f'{result}: Found and returned')
-                return web.json_response(result)
+                return web.json_response(result, status=200)
             else:
-                json = {'error': f'territory with id {territory_id} not found',
-                        'status': 404
+                message = {
+                        'error': f'territory with id {territory_id} not found'
                         }
-                logging.info(f'{json}')
-                return web.json_response(json)
+                logging.info(f'{message}')
+                return web.json_response(message, status=404)
+
+    async def add_tokens(request):
+        data = await request.json()
+        tokens = data.get('tokens')
+        territory_id = data.get('territory_id')
+        query = f'''
+        UPDATE territories
+        SET tokens = {tokens}
+        WHERE id = {territory_id}
+        '''
+
+        async with request.app['pool'].acquire() as db_conn:
+            cursor = await db_conn.cursor(aiomysql.DictCursor)
+            await cursor.execute(query)
+            result = cursor.rowcount
+            if result == -1:
+                message = {
+                        'error': f'territory with id {territory_id} not found'
+                        }
+                return web.json_response(message, status=404)
+            await db_conn.commit()
+            message = {
+                    'result': 'update complete for territory-id {territory_id}'
+                    }
+            return web.json_response(message, status=200)
