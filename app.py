@@ -22,6 +22,7 @@ app.add_routes([
         web.get('/v0/get-region', Region.get),
         web.get('/v0/get-territory', Territory.get),
         web.patch('/v0/add-tokens', Territory.add_tokens),
+        web.patch('/v0/change-ownership', Territory.change_ownership),
         ])
 
 logging.basicConfig(

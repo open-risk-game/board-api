@@ -7,8 +7,11 @@ export DB_PORT?=3306
 run:
 	python app.py
 
-dev-run:
-	adev runserver .
-
 test:
 	pytest -vv
+
+build: 
+	docker build -t board-api .
+
+dev-run:
+	adev runserver .

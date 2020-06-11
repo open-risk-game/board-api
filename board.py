@@ -37,6 +37,7 @@ class Territory:
         params = request.rel_url.query
         territory_id = params['territory_id']
         query = f'''
+
         SELECT name, tokens, owner, region_id
         FROM territories
         WHERE id = {territory_id}
@@ -60,6 +61,7 @@ class Territory:
         data = await request.json()
         tokens = data.get('tokens')
         territory_id = data.get('territory_id')
+
         query = f'''
         UPDATE territories
         SET tokens = tokens + {tokens}
@@ -70,6 +72,32 @@ class Territory:
             cursor = await db_conn.cursor(aiomysql.DictCursor)
             await cursor.execute(query)
             result = cursor.rowcount
+            if result == -1:
+                message = {
+                        'error': f'territory with id {territory_id} not found'
+                        }
+                return web.json_response(message, status=404)
+            await db_conn.commit()
+            message = {
+                    'result': f'updated territory-id {territory_id}'
+                    }
+            return web.json_response(message, status=200)
+
+    async def change_ownership(request):
+        data = await request.json()
+        player_id = data.get('player_id')
+        territory_id = data.get('territory_id')
+
+        query = f'''
+        UPDATE territories
+        SET owner = {player_id}
+        WHERE id = {territory_id}
+        '''
+        async with request.app['pool'].acquire() as db_conn:
+            cursor = await db_conn.cursor(aiomysql.DictCursor)
+            await cursor.execute(query)
+            result = cursor.rowcount
+            print(result, 'aaa')
             if result == -1:
                 message = {
                         'error': f'territory with id {territory_id} not found'
