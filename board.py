@@ -12,19 +12,17 @@ class Region:
     async def get(request):
         region_id = 1
         query = f'''
-        SELECT territories.name, territories.tokens, territories.owner
-        FROM territories
-        INNER JOIN regions ON regions.id = territories.region_id
-        WHERE territories.region_id = {region_id}
+        SELECT regions.name
+        FROM regions
+        WHERE id = {region_id}
         '''
 
         async with request.app['pool'].acquire() as db_conn:
             cursor = await db_conn.cursor(aiomysql.DictCursor)
             await cursor.execute(query)
-            result = await cursor.fetchall()
-            data = {'result': result}
+            result = await cursor.fetchone()
 
-        return web.json_response({'data': data})
+        return web.json_response(result, status=200)
 
 
 class Territory:
@@ -38,7 +36,6 @@ class Territory:
         params = request.rel_url.query
         territory_id = params['territory_id']
         query = f'''
-
         SELECT name, tokens, owner, region_id
         FROM territories
         WHERE id = {territory_id}
