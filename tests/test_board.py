@@ -2,7 +2,7 @@ import os
 import json
 import pytest
 import aiomysql
-from board import Territory, Region
+from board import Territory
 
 
 DB_HOST = os.environ.get('DB_HOST')
@@ -23,12 +23,19 @@ async def pool(loop):
         yield pool
 
 
+class FakeURL:
+
+    def __init__(self, territory_id):
+        self.query = {'territory_id': territory_id}
+
+
 class FakeRequest:
 
-    def __init__(self, _raise_exception=False, _json=None, app=None):
+    def __init__(self, _raise_exception=False, _json=None, app=None, url=None):
         self._json = _json
         self._raise_exception = _raise_exception
         self.app = app or {}
+        self.rel_url = url
 
     async def json(self):
         if self._raise_exception:
@@ -37,25 +44,14 @@ class FakeRequest:
 
 
 async def test_territory_get_200(pool):
-    fake_request = FakeRequest(app={'pool': pool})
+    fake_url = FakeURL(1)
+    fake_request = FakeRequest(app={'pool': pool}, url=fake_url)
     response = await Territory.get(fake_request)
     expected = {
-              'result': {
-                  'name': 'United Kingdom',
-                  'owner': 'Red',
-                  'region_id': 1,
-                  'tokens': 11
-                  }
+              'name': 'Islington',
+              'owner': None,
+              'region_id': 1,
+              'tokens': 11
          }
-
-    actual = json.loads(response.text).get('territory')
-    assert actual == expected
-
-
-async def test_region_get_200(pool):
-    fake_request = FakeRequest(app={'pool': pool})
-    response = await Region.get(fake_request)
-    expected = {}
-
-    actual = json.loads(response.text).get('data')
+    actual = json.loads(response.text)
     assert actual == expected
