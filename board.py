@@ -55,18 +55,20 @@ class Territory:
                 logging.info(f'{message}')
                 return web.json_response(message, status=404)
 
-    async def get_boarders(from_id):
+    async def get_boarders(request):
+        params = request.rel_url.query
+        territory_id = params['territory_id']
         query = f'''
         SELECT t.name, t.tokens, t.owner
         FROM territories AS t
         INNER JOIN boarders AS b ON t.id = b.id
-        WHERE {from_id} = b.territory_from_id
+        WHERE {territory_id} = b.territory_from_id
         '''
         async with request.app['pool'].acquire() as db_conn:
             cursor = await db_conn.cursor(aiomysql.DictCursor)
             await cursor.execute(query)
-            result = cursor.rowcount
-        return {}
+            result = await cursor.fetchall()
+        return web.json_response({'boarders': result})
 
     async def add_tokens(request):
         data = await request.json()

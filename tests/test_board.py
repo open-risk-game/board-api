@@ -2,7 +2,7 @@ import os
 import json
 import pytest
 import aiomysql
-from board import Territory
+from board import Territory, Region
 
 
 DB_HOST = os.environ.get('DB_HOST')
@@ -52,6 +52,17 @@ async def test_territory_get_200(pool):
               'owner': None,
               'region_id': 1,
               'tokens': 11
+         }
+    actual = json.loads(response.text)
+    assert actual == expected
+
+
+async def test_region_get_200(pool):
+    fake_url = FakeURL(1)
+    fake_request = FakeRequest(app={'pool': pool}, url=fake_url)
+    response = await Region.get(fake_request)
+    expected = {
+              'name': 'London'
          }
     actual = json.loads(response.text)
     assert actual == expected
