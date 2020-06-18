@@ -29,9 +29,10 @@ class Region:
 
 class Territory:
 
-    def __init__(self, name, tokens):
+    def __init__(self, name, tokens, boarders={}):
         self.name = name
         self.tokens = tokens
+        self.boarders = boarders
 
     async def get(request):
         params = request.rel_url.query
@@ -56,6 +57,19 @@ class Territory:
                         }
                 logging.info(f'{message}')
                 return web.json_response(message, status=404)
+
+    async def get_boarders(from_id):
+        query = f'''
+        SELECT t.name, t.tokens, t.owner
+        FROM territories AS t
+        INNER JOIN boarders AS b ON t.id = b.id
+        WHERE {from_id} = b.territory_from_id
+        '''
+        async with request.app['pool'].acquire() as db_conn:
+            cursor = await db_conn.cursor(aiomysql.DictCursor)
+            await cursor.execute(query)
+            result = cursor.rowcount
+        return {}
 
     async def add_tokens(request):
         data = await request.json()
@@ -97,7 +111,6 @@ class Territory:
             cursor = await db_conn.cursor(aiomysql.DictCursor)
             await cursor.execute(query)
             result = cursor.rowcount
-            print(result, 'aaa')
             if result == -1:
                 message = {
                         'error': f'territory with id {territory_id} not found'

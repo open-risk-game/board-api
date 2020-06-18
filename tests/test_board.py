@@ -13,7 +13,7 @@ DB_NAME = os.environ.get('DB_NAME')
 
 
 @pytest.fixture
-async def pool():
+async def pool(loop):
     async with aiomysql.create_pool(
             host=DB_HOST,
             port=int(DB_PORT),
