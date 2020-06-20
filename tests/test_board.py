@@ -43,6 +43,15 @@ class FakeRequest:
         return self._json
 
 
+def test_is_boardering():
+    boarders = [{'id': 4}, {'id': 3}]
+    source = Territory(2, 'abc', 11, boarders)
+    destination = Territory(3, 'efg', 22)
+    actual = Territory.is_boardering(source, destination)
+    expected = True
+    assert expected == actual
+
+
 async def test_territory_get_200(pool):
     fake_url = FakeURL(1)
     fake_request = FakeRequest(app={'pool': pool}, url=fake_url)

@@ -27,7 +27,8 @@ class Region:
 
 class Territory:
 
-    def __init__(self, name, tokens, boarders={}):
+    def __init__(self, territory_id, name, tokens, boarders={}):
+        self.territory_id = territory_id
         self.name = name
         self.tokens = tokens
         self.boarders = boarders
@@ -55,11 +56,17 @@ class Territory:
                 logging.info(f'{message}')
                 return web.json_response(message, status=404)
 
+    def is_boardering(source, destination):
+        for boardering in source.boarders:
+            if destination.territory_id == boardering.get('id'):
+                return True
+        return False
+
     async def get_boarders(request):
         params = request.rel_url.query
         territory_id = params['territory_id']
         query = f'''
-        SELECT t.name, t.tokens, t.owner
+        SELECT t.id, t.name, t.tokens, t.owner
         FROM territories AS t
         INNER JOIN boarders AS b ON t.id = b.id
         WHERE {territory_id} = b.territory_from_id
