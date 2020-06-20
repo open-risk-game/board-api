@@ -2,7 +2,8 @@ import os
 import aiomysql
 import logging
 from aiohttp import web
-from board import Region, Territory
+from models.territory import Territory
+from models.region import Region
 
 DB_HOST = os.environ.get('DB_HOST')
 DB_USER = os.environ.get('DB_USER')
