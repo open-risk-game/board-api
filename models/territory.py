@@ -105,3 +105,22 @@ class Territory:
                     'result': f'updated territory-id {territory_id}'
                     }
             return web.json_response(message, status=200)
+
+    async def get_by_player(request):
+        player_id = 1
+        params = request.rel_url.query
+        player_id = params['player_id']
+        query = f'SELECT * FROM territories WHERE owner = {player_id}'
+        async with request.app['pool'].acquire() as db_conn:
+            cursor = await db_conn.cursor(aiomysql.DictCursor)
+            await cursor.execute(query)
+            result = await cursor.fetchall()
+            if result is not None:
+                logging.info(f'{result}: Found and returned')
+                return web.json_response(result, status=200)
+            else:
+                message = {
+                        'error': f'territory with id {player_id} not found'
+                        }
+                logging.info(f'{message}')
+                return web.json_response(message, status=404)

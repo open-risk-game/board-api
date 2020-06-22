@@ -29,6 +29,7 @@ app.add_routes([
         web.get('/v0/get-region', Region.get),
         web.get('/v0/get-territory', Territory.get),
         web.get('/v0/get-boarders', Territory.get_boarders),
+        web.get('/v0/get-by-player', Territory.get_by_player),
         web.patch('/v0/add-tokens', Territory.add_tokens),
         web.patch('/v0/change-ownership', Territory.change_ownership),
         ])
