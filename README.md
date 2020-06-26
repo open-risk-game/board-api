@@ -1,5 +1,17 @@
 # map-api
 
+## Overview
+
+### GET
+
+#### Game state of a baord
+
+`curl http://<url>/v0/get-board?board_id=1`
+
+Used when you wish to retrive the state of any given board.
+
+`[{"owner": "abc", "tile_id": 1, "tokens": 5}, {"owner": "efg", "tile_id": 2, "tokens": 7}, {"owner": "efg", "tile_id": 3, "tokens": 0}, {"owner": "neutral", "tile_id": 4, "tokens": 0}, {"owner": "neutral", "tile_id": 5, "tokens": 0}]`
+
 ## Development
 
 Test against your local `MySQL` instance. See the `game-database` repository
