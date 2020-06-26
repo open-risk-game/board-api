@@ -4,6 +4,8 @@ import logging
 from aiohttp import web
 from models.territory import Territory
 from models.region import Region
+import models.board as board
+
 
 DB_HOST = os.environ.get('DB_HOST')
 DB_USER = os.environ.get('DB_USER')
@@ -26,6 +28,7 @@ app = web.Application()
 app.on_startup.append(create_db_pool)
 
 app.add_routes([
+        web.get('/v0/get-board', board.get),
         web.get('/v0/get-region', Region.get),
         web.get('/v0/get-territory', Territory.get),
         web.get('/v0/get-boarders', Territory.get_boarders),
