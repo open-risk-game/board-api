@@ -10,7 +10,12 @@
 
 Used when you wish to retrive the state of any given board.
 
-`[{"owner": "abc", "tile_id": 1, "tokens": 5}, {"owner": "efg", "tile_id": 2, "tokens": 7}, {"owner": "efg", "tile_id": 3, "tokens": 0}, {"owner": "neutral", "tile_id": 4, "tokens": 0}, {"owner": "neutral", "tile_id": 5, "tokens": 0}]`
+**Response**
+
+`[{"player_id": 1, "tokens": 5, "x": 4, "y": 1}, {"player_id": 2, "tokens": 7,
+"x": 0, "y": 1}, {"player_id": null, "tokens": 0, "x": null, "y": null},
+{"player_id": null, "tokens": 0, "x": null, "y": null}, {"player_id": null,
+"tokens": 0, "x": null, "y": null}]` 
 
 ## Development
 
