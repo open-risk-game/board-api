@@ -20,6 +20,7 @@ Used when you wish to retrive the state of any given board.
     "x": 4, "y": 1},
     "neighbors: [2, 3],
     playable: 1,
+    },
     {
     "player_id": 2,
     "tokens": 7,
