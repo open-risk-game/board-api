@@ -6,7 +6,7 @@
 
 #### Game state of a baord
 
-`curl http://<url>/v0/get-board?board_id=1`
+`curl http://<host>/v0/get-board?board_id=1`
 
 Used when you wish to retrive the state of any given board.
 
