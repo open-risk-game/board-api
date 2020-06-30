@@ -17,7 +17,8 @@ Used when you wish to retrive the state of any given board.
     {
     "player_id": 1,
     "tokens": 5,
-    "x": 4, "y": 1},
+    "x": 0, 
+    "y": 0,
     "neighbors: [2, 3],
     playable: 1,
     },
@@ -32,8 +33,8 @@ Used when you wish to retrive the state of any given board.
     {
     "player_id": null,
     "tokens": 0,
-    "x": null,
-    "y": null},
+    "x": 1,
+    "y": 0,
     "neighbors: [2, 1],
     playable: 0,
     }
