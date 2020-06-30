@@ -15,6 +15,7 @@ Used when you wish to retrive the state of any given board.
 ``` json
 [
     {
+    "hex_id": 111,
     "player_id": 1,
     "tokens": 5,
     "x": 0, 
@@ -23,6 +24,7 @@ Used when you wish to retrive the state of any given board.
     "playable": 1,
     },
     {
+    "hex_id": 112,
     "player_id": 2,
     "tokens": 7,
     "x": 0,
@@ -31,6 +33,7 @@ Used when you wish to retrive the state of any given board.
     "playable": 1,
     },
     {
+    "hex_id": 113,
     "player_id": null,
     "tokens": 0,
     "x": 1,
