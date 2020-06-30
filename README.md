@@ -12,7 +12,8 @@ Used when you wish to retrive the state of any given board.
 
 **Response**
 
-`[
+``` json
+[
     {
     "player_id": 1,
     "tokens": 5,
@@ -36,6 +37,7 @@ Used when you wish to retrive the state of any given board.
     playable: 0,
     }
 ]
+```
 
 ## Development
 
