@@ -26,7 +26,7 @@ Used when you wish to retrive the state of any given board.
     "player_id": 2,
     "tokens": 7,
     "x": 0,
-    "y": 1
+    "y": 1,
     "neighbors": [1, 3],
     "playable": 1,
     },
