@@ -20,7 +20,7 @@ Used when you wish to retrive the state of any given board.
     "tokens": 5,
     "x": 0, 
     "y": 0,
-    "neighbors": [2, 3],
+    "neighbors": [112, 113],
     "playable": 1,
     },
     {
@@ -29,7 +29,7 @@ Used when you wish to retrive the state of any given board.
     "tokens": 7,
     "x": 0,
     "y": 1,
-    "neighbors": [1, 3],
+    "neighbors": [111, 113],
     "playable": 1,
     },
     {
@@ -38,7 +38,7 @@ Used when you wish to retrive the state of any given board.
     "tokens": 0,
     "x": 1,
     "y": 0,
-    "neighbors": [2, 1],
+    "neighbors": [112, 111],
     "playable": 0,
     }
 ]
