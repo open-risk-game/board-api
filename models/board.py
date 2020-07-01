@@ -1,10 +1,14 @@
 import aiomysql
 from aiohttp import web
-import json
+
+
+async def is_connected(app, hex_from_id, hex_to_id):
+    if hex_to_id in await hex_edges(app, hex_from_id):
+        return True
+    return False
 
 
 async def hex_edges(app, hex_id):
-
     query = f'SELECT hex_to FROM edge WHERE hex_from = {hex_id}'
     async with app['pool'].acquire() as db_conn:
         cursor = await db_conn.cursor(aiomysql.DictCursor)
@@ -31,6 +35,4 @@ async def get(request):
         for hexagon in result:
             edges = await hex_edges(request.app, hexagon.get('hex_id'))
             hexagon['neighbors'] = edges
-            hexagons = hexagon
-        hexagons = json.dumps(hexagons)
         return web.json_response(result)

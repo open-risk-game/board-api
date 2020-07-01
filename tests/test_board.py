@@ -2,8 +2,6 @@ import os
 import json
 import pytest
 import aiomysql
-from models.region import Region
-from models.territory import Territory
 import models.board as board
 
 DB_HOST = os.environ.get('DB_HOST')
@@ -44,19 +42,48 @@ class FakeRequest:
         return self._json
 
 
+async def test_is_connected(pool):
+    app = {'pool': pool}
+    is_connected = await board.is_connected(app, 5, 9)
+    is_connected_expected = True
+    assert is_connected_expected == is_connected
+    not_connected = await board.is_connected(app, 5, 1)
+    not_connected_expected = False
+    assert not_connected_expected == not_connected
+
+
 async def test_get_edges(pool):
     app = {'pool': pool}
     edges = await board.hex_edges(app, 5)
     assert edges == [2, 3, 4, 6, 8, 9]
 
 
-# async def test_territory_get_200(pool):
-#     fake_url = FakeURL(1)
-#     fake_request = FakeRequest(app={'pool': pool}, url=fake_url)
-#     response = await board.get(fake_request)
-#     expected = "[{'hex_id': 1,\n  'neighbors': [],\n  'playable': 0,\n  'player_id': None,\n  'tokens': 0,\n  'x': 0,\n  'y': 0},\n {'hex_id': 2,\n  'neighbors': [3, 4, 5],\n  'playable': 1,\n  'player_id': 1,\n  'tokens': 5,\n  'x': 0,\n  'y': 1},\n {'hex_id': 3,\n  'neighbors': [2, 5, 6],\n  'playable': 1,\n  'player_id': None,\n  'tokens': 0,\n  'x': 0,\n  'y': 1},\n {'hex_id': 4,\n  'neighbors': [2, 5, 8],\n  'playable': 1,\n  'player_id': None,\n  'tokens': 0,\n  'x': 1,\n  'y': 0},\n {'hex_id': 5,\n  'neighbors': [2, 3, 4, 6, 8, 9],\n  'playable': 1,\n  'player_id': None,\n  'tokens': 0,\n  'x': 1,\n  'y': 1},\n {'hex_id': 6,\n  'neighbors': [3, 5, 9],\n  'playable': 1,\n  'player_id': None,\n  'tokens': 0,\n  'x': 1,\n  'y': 2},\n {'hex_id': 7,\n  'neighbors': [],\n  'playable': 0,\n  'player_id': None,\n  'tokens': 0,\n  'x': 2,\n  'y': 0},\n {'hex_id': 8,\n  'neighbors': [4, 5, 9],\n  'playable': 1,\n  'player_id': None,\n  'tokens': 0,\n  'x': 2,\n  'y': 1},\n {'hex_id': 9,\n  'neighbors': [5, 6, 8],\n  'playable': 1,\n  'player_id': 2,\n  'tokens': 7,\n  'x': 2,\n  'y': 2}]"
-#     actual = json.loads(response.text)
-#     assert actual == expected
+async def test_get_board_200(pool):
+    fake_url = FakeURL(2)
+    fake_request = FakeRequest(app={'pool': pool}, url=fake_url)
+    response = await board.get(fake_request)
+    expected = [{
+                "hex_id": 10,
+                "player_id": 1,
+                "tokens": 0,
+                "x": 0,
+                "y": 0,
+                "playable": 1,
+                "neighbors": [11]
+                },
+                {
+                "hex_id": 11,
+                "player_id": 2,
+                "tokens": 0,
+                "x": 0,
+                "y": 1,
+                "playable": 1,
+                "neighbors": [10]
+                }]
+    actual = json.loads(response.text)
+    assert actual == expected
+
+
 # def test_is_boardering():
 #     boarders = [{'id': 4}, {'id': 3}]
 #     source = Territory(2, 'abc', 11, boarders)
