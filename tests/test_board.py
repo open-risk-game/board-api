@@ -3,6 +3,7 @@ import json
 import pytest
 import aiomysql
 import models.board as board
+import models.hexagon as hexagon
 
 DB_HOST = os.environ.get('DB_HOST')
 DB_PORT = os.environ.get('DB_PORT')
@@ -24,8 +25,8 @@ async def pool(loop):
 
 class FakeURL:
 
-    def __init__(self, board_id):
-        self.query = {'board_id': board_id}
+    def __init__(self, queries={}):
+        self.query = queries
 
 
 class FakeRequest:
@@ -43,25 +44,38 @@ class FakeRequest:
 
 
 async def test_is_connected(pool):
-    app = {'pool': pool}
-    is_connected = await board.is_connected(app, 5, 9)
-    is_connected_expected = True
-    assert is_connected_expected == is_connected
-    not_connected = await board.is_connected(app, 5, 1)
-    not_connected_expected = False
-    assert not_connected_expected == not_connected
+    connected_url = FakeURL(queries={
+        "from": '5',
+        "to": '2'
+        })
+    request = FakeRequest(app={'pool': pool}, url=connected_url)
+    connected_response = await hexagon.is_connected(request)
+    connected_actual = json.loads(connected_response.text)
+    assert {"Connection": True} == connected_actual
+
+    not_connected_url = FakeURL(queries={
+        "from": 5,
+        "to": 2
+        })
+    not_connected_request = FakeRequest(
+            app={'pool': pool},
+            url=not_connected_url
+            )
+    not_connected_response = await hexagon.is_connected(not_connected_request)
+    not_connected_actual = json.loads(not_connected_response.text)
+    assert {"Connection": True} == not_connected_actual
 
 
 async def test_get_edges(pool):
     app = {'pool': pool}
-    edges = await board.hex_edges(app, 5)
+    edges = await hexagon.hex_edges(app, 5)
     assert edges == [2, 3, 4, 6, 8, 9]
 
 
 async def test_get_board_200(pool):
-    fake_url = FakeURL(2)
+    fake_url = FakeURL({"id": 2})
     fake_request = FakeRequest(app={'pool': pool}, url=fake_url)
-    response = await board.get(fake_request)
+    response = await board.get_board(fake_request)
     expected = [{
                 "hex_id": 10,
                 "player_id": 1,
