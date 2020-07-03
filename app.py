@@ -32,6 +32,7 @@ app.add_routes([
         web.get('/v0/get-board', board.get_board),
         web.patch('/v0/change-ownership', hexagon.change_ownership),
         web.patch('/v0/update-tokens', hexagon.update_tokens),
+        web.post('/v0/create-board', board.create_board),
         ])
 
 logging.basicConfig(

@@ -22,3 +22,21 @@ async def get_board(request):
                     )
             hex_item['neighbors'] = edges
         return web.json_response(result)
+
+
+async def create_board(request):
+    data = await request.json()
+    player_A_id = data.get('a')
+    player_B_id = data.get('b')
+    query = f'''
+        INSERT INTO board (playerAid, playerBid)
+        VALUES ({player_A_id}, {player_B_id})
+        '''
+    async with request.app['pool'].acquire() as db_conn:
+        cursor = await db_conn.cursor()
+        await cursor.execute(query)
+        if cursor.lastrowid is None:
+            return web.json_response({"error": "Check player IDs"})
+        await db_conn.commit()
+        board_id = cursor.lastrowid
+        return web.json_response({"board_id": board_id})
