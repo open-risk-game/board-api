@@ -1,10 +1,10 @@
-# map-api
+# Board API
 
 ## Overview
 
 ### GET
 
-#### Game state of a baord
+#### State of a baord
 
 `curl http://<host>/v0/get-board?id=1`
 
@@ -42,6 +42,35 @@ Used when you wish to retrive the state of any given board.
     "neighbors": [112, 111],
     }
 ]
+```
+
+#### State of single hexagon
+
+`curl http://<host>/v0/get-hex?id=2`
+
+**Response**
+
+```json
+    {
+    "hex_id": 111,
+    "player_id": 1,
+    "tokens": 5,
+    "x": 0,
+    "y": 0,
+    "playable": 1,
+    "neighbors": [112, 113],
+    },
+```
+
+
+#### Check connection for between two hexagons
+
+`curl http://<host>/v0/check-connection?from=2&to=3`
+
+**Response**
+
+```json
+{"Connection": True}
 ```
 
 ## Development
