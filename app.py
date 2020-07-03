@@ -2,8 +2,6 @@ import os
 import aiomysql
 import logging
 from aiohttp import web
-from models.territory import Territory
-from models.region import Region
 import models.board as board
 import models.hexagon as hexagon
 
@@ -34,12 +32,6 @@ app.add_routes([
         web.get('/v0/get-board', board.get_board),
         web.patch('/v0/change-ownership', hexagon.change_ownership),
         web.patch('/v0/update-tokens', hexagon.update_tokens),
-        web.get('/v0/get-region', Region.get),
-        web.get('/v0/get-territory', Territory.get),
-        web.get('/v0/get-boarders', Territory.get_boarders),
-        web.get('/v0/get-by-player', Territory.get_by_player),
-        web.patch('/v0/add-tokens', Territory.add_tokens),
-        web.patch('/v-0/ownership', Territory.change_ownership),
         ])
 
 logging.basicConfig(

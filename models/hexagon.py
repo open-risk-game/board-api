@@ -40,7 +40,7 @@ async def get_hex(request):
             return web.json_response(result, status=200)
         else:
             message = {
-                    'error': f'territory with id {hex_id} not found'
+                    'error': f'Hexagon with id {hex_id} not found'
                     }
             return web.json_response(message, status=404)
 
@@ -87,11 +87,11 @@ async def update_tokens(request):
         result = cursor.rowcount
         if result == -1:
             message = {
-                    'error': f'territory with id {hex_id} not found'
+                    'error': f'hexagon with id {hex_id} not found'
                     }
             return web.json_response(message, status=404)
         await db_conn.commit()
         message = {
-                'result': f'updated territory-id {hex_id}'
+                'result': f'updated hexagon-id {hex_id}'
                 }
         return web.json_response(message, status=200)

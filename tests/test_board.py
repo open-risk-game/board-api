@@ -96,37 +96,3 @@ async def test_get_board_200(pool):
                 }]
     actual = json.loads(response.text)
     assert actual == expected
-
-
-# def test_is_boardering():
-#     boarders = [{'id': 4}, {'id': 3}]
-#     source = Territory(2, 'abc', 11, boarders)
-#     destination = Territory(3, 'efg', 22)
-#     actual = Territory.is_boardering(source, destination)
-#     expected = True
-#     assert expected == actual
-#
-#
-# async def test_territory_get_200(pool):
-#     fake_url = FakeURL(1)
-#     fake_request = FakeRequest(app={'pool': pool}, url=fake_url)
-#     response = await Territory.get(fake_request)
-#     expected = {
-#               'name': 'Islington',
-#               'owner': None,
-#               'region_id': 1,
-#               'tokens': 11
-#          }
-#     actual = json.loads(response.text)
-#     assert actual == expected
-#
-#
-# async def test_region_get_200(pool):
-#     fake_url = FakeURL(1)
-#     fake_request = FakeRequest(app={'pool': pool}, url=fake_url)
-#     response = await Region.get(fake_request)
-#     expected = {
-#               'name': 'London'
-#          }
-#     actual = json.loads(response.text)
-#     assert actual == expected
