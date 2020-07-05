@@ -73,6 +73,24 @@ Used when you wish to retrive the state of any given board.
 {"Connection": True}
 ```
 
+#### Get which player is next to move
+
+`curl http://<host>/v0/get-turn?id=1`
+
+**Response**
+
+`{"playing": 1}`
+
+### PATCH
+
+#### Update board with next players turn
+
+`curl -X PATCH http://<host>v0/update-turn -d '{"id": 2, "next": 2}'`
+
+**Reponse**
+
+`{"next-player": 2}`
+
 ## Development
 
 Test against your local `MySQL` instance. See the `game-database` repository
