@@ -32,7 +32,7 @@ async def get_turn(request):
         cursor = await db_conn.cursor(aiomysql.DictCursor)
         await cursor.execute(query)
         result = await cursor.fetchone()
-    return web.json_response({'next-player': result}, status=200)
+    return web.json_response(result, status=200)
 
 
 async def update_turn(request):
@@ -47,5 +47,4 @@ async def update_turn(request):
         if updated is not None:
             await db_conn.commit()
             return web.json_response({'next-player': playing_next}, status=200)
-        return web.json_response({'next-player': 'None'}, status=200)
-
+        return web.json_response({'next-player': 'None'}, status=404)
