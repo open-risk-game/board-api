@@ -30,8 +30,10 @@ app.add_routes([
         web.get('/v0/check-connection', hexagon.is_connected),
         web.get('/v0/get-hex', hexagon.get_hex),
         web.get('/v0/get-board', board.get_board),
+        web.get('/v0/get-turn', board.get_turn),
         web.patch('/v0/change-ownership', hexagon.change_ownership),
         web.patch('/v0/update-tokens', hexagon.update_tokens),
+        web.patch('/v0/update-turn', board.update_turn),
         web.post('/v0/create-board', board.create_board),
         ])
 

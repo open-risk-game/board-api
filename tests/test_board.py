@@ -3,7 +3,6 @@ import json
 import pytest
 import aiomysql
 import models.board as board
-import models.hexagon as hexagon
 
 DB_HOST = os.environ.get('DB_HOST')
 DB_PORT = os.environ.get('DB_PORT')
@@ -43,35 +42,6 @@ class FakeRequest:
         return self._json
 
 
-async def test_is_connected(pool):
-    connected_url = FakeURL(queries={
-        "from": '5',
-        "to": '2'
-        })
-    request = FakeRequest(app={'pool': pool}, url=connected_url)
-    connected_response = await hexagon.is_connected(request)
-    connected_actual = json.loads(connected_response.text)
-    assert {"Connection": True} == connected_actual
-
-    not_connected_url = FakeURL(queries={
-        "from": 5,
-        "to": 2
-        })
-    not_connected_request = FakeRequest(
-            app={'pool': pool},
-            url=not_connected_url
-            )
-    not_connected_response = await hexagon.is_connected(not_connected_request)
-    not_connected_actual = json.loads(not_connected_response.text)
-    assert {"Connection": True} == not_connected_actual
-
-
-async def test_get_edges(pool):
-    app = {'pool': pool}
-    edges = await hexagon.hex_edges(app, 5)
-    assert edges == [2, 3, 4, 6, 8, 9]
-
-
 async def test_get_board_200(pool):
     fake_url = FakeURL({"id": 2})
     fake_request = FakeRequest(app={'pool': pool}, url=fake_url)
@@ -79,7 +49,7 @@ async def test_get_board_200(pool):
     expected = [{
                 "hex_id": 10,
                 "player_id": 1,
-                "tokens": 0,
+                "tokens": 5,
                 "x": 0,
                 "y": 0,
                 "playable": 1,
@@ -88,7 +58,7 @@ async def test_get_board_200(pool):
                 {
                 "hex_id": 11,
                 "player_id": 2,
-                "tokens": 0,
+                "tokens": 9,
                 "x": 0,
                 "y": 1,
                 "playable": 1,
@@ -96,3 +66,21 @@ async def test_get_board_200(pool):
                 }]
     actual = json.loads(response.text)
     assert actual == expected
+
+
+async def test_get_current_turn(pool):
+    url = FakeURL({"id": 2})
+    request = FakeRequest(app={'pool': pool}, url=url)
+    response = await board.get_turn(request)
+    actual = json.loads(response.text)
+    expected = {"playing": 2}
+    assert expected == actual
+
+
+async def test_update_current_turn(pool):
+    data = {"id": 2, "next": 2}
+    request = FakeRequest(app={'pool': pool}, _json=data)
+    response = await board.update_turn(request)
+    actual = json.loads(response.text)
+    expected = {"next-player": 2}
+    assert expected == actual
