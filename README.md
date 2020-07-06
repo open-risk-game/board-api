@@ -70,7 +70,7 @@ Used when you wish to retrive the state of any given board.
 **Response**
 
 ```json
-{"Connection": True}
+{"Connection": "true"}
 ```
 
 #### Get which player is next to move
