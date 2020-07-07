@@ -1,4 +1,3 @@
-import json
 import aiomysql
 from aiohttp import web
 import models.hexagon as hexagon
@@ -32,7 +31,7 @@ async def get_board(request):
 
 async def get_board_information(app, board_id):
     query = '''
-        SELECT id, description, created
+        SELECT id, description, created, playerAid, playerBid
         FROM board
         WHERE id = %s
     '''
