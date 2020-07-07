@@ -14,14 +14,14 @@ Used when you wish to retrive the state of any given board.
 
 ``` json
 {
-    board-info: {
+    "board-info": {
         "id": 1,
         "description": "Test board",
         "created": "2020-07-07 17:17:39",
         "playerAid": 1,
         "playerBid": 2,
     }
-    hexagons: [
+    "hexagons": [
         {
             "hex_id": 111,
             "player_id": 1,
