@@ -1,6 +1,6 @@
 export DB_HOST?=127.0.0.1
-export DB_PASS?=root
-export DB_USER?=root
+export DB_PASS?=tilesdev
+export DB_USER?=tilesdev
 export DB_NAME?=tiles
 export DB_PORT?=3306
 
