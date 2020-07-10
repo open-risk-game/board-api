@@ -1,6 +1,7 @@
 import os
 import aiomysql
 import logging
+import aiohttp_cors
 from aiohttp import web
 import models.board as board
 import models.hexagon as hexagon
@@ -26,6 +27,7 @@ app = web.Application()
 
 app.on_startup.append(create_db_pool)
 
+
 app.add_routes([
         web.get('/v0/check-connection', hexagon.is_connected),
         web.get('/v0/get-hex', hexagon.get_hex),
@@ -45,3 +47,23 @@ logging.basicConfig(
 
 if __name__ == "__main__":
     web.run_app(app)
+
+
+# `aiohttp_cors.setup` returns `aiohttp_cors.CorsConfig` instance.
+# The `cors` instance will store CORS configuration for the
+# application.
+
+# To enable CORS processing for specific route you need to add
+# that route to the CORS configuration object and specify its
+# CORS options.
+cors = aiohttp_cors.setup(app)
+resource = cors.add(app.router.add_resource("/v0/get-board"))
+route = cors.add(
+    resource.add_route("GET", board.get_board), {
+        "*": aiohttp_cors.ResourceOptions(
+            allow_credentials=True,
+            expose_headers=("X-Custom-Server-Header",),
+            allow_headers=("X-Requested-With", "Content-Type"),
+            max_age=3600,
+        )
+    })
