@@ -31,7 +31,7 @@ async def get_board(request):
 
 async def get_board_information(app, board_id):
     query = '''
-        SELECT id, description, created, playerAid, playerBid
+        SELECT id, description, created, playerAid, playerBid, playing
         FROM board
         WHERE id = %s
     '''
