@@ -11,7 +11,8 @@ async def get_board(request):
         FROM hex
         WHERE boardid = %s
     '''
-    async with request.app['pool'].acquire() as db_conn:
+    pool = request.app['pool']
+    async with pool.acquire() as db_conn:
         cursor = await db_conn.cursor(aiomysql.DictCursor)
         await cursor.execute(query, (board_id,))
         result = await cursor.fetchall()
@@ -21,7 +22,7 @@ async def get_board(request):
                     hex_item.get('hex_id')
                     )
             hex_item['neighbors'] = edges
-        board_info = await get_board_information(request.app, board_id)
+        board_info = await get_board_information(pool, board_id)
         output = {
                 'board-info': board_info,
                 'hexagons': result
@@ -29,13 +30,13 @@ async def get_board(request):
         return web.json_response(output)
 
 
-async def get_board_information(app, board_id):
+async def get_board_information(pool, board_id):
     query = '''
         SELECT id, description, created, playerAid, playerBid, playing
         FROM board
         WHERE id = %s
     '''
-    async with app['pool'].acquire() as db_conn:
+    async with pool.acquire() as db_conn:
         cursor = await db_conn.cursor(aiomysql.DictCursor)
         await cursor.execute(query, (board_id,))
         result = await cursor.fetchone()
