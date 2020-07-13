@@ -95,3 +95,30 @@ async def update_tokens(request):
                 'result': f'updated hexagon-id {hex_id}'
                 }
         return web.json_response(message, status=200)
+
+
+async def create_hex(request):
+    data = await request.json()
+    owner = data.get('owner')
+    tokens = data.get('tokens')
+    x = data.get('x')
+    y = data.get('y')
+    playable = data.get('playable')
+    board_id = data.get('board_id')
+    query = '''
+        INSERT INTO hex (owner, tokens, x, y, playable, boardid)
+        VALUES (%s, %s, %s, %s, %s, %s)
+    '''
+    async with request.app['pool'].acquire() as db_conn:
+        cursor = await db_conn.cursor(aiomysql.DictCursor)
+        await cursor.execute(
+                query,
+                (
+                    owner,
+                    tokens,
+                    x,
+                    y,
+                    playable,
+                    board_id
+                )
+            )
