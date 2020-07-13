@@ -16,8 +16,8 @@ build:
 dev-run:
 	adev runserver .
 
-make install: install-test
+install: install-test
 	pip install -r requirements
 
-make install-test:
+install-test:
 	pip install -r requirements-test
