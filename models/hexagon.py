@@ -31,7 +31,7 @@ async def get_hex(request):
         FROM hex
         WHERE id = {hex_id}
     '''
-    pool = request.app['pool'].acuire()
+    pool = request.app['pool']
     async with pool.acquire() as db_conn:
         cursor = await db_conn.cursor(aiomysql.DictCursor)
         await cursor.execute(query)
