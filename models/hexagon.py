@@ -6,7 +6,8 @@ async def is_connected(request):
     params = request.rel_url.query
     hex_from_id = params['from']
     hex_to_id = params['to']
-    if int(hex_to_id) in await hex_edges(request.app, int(hex_from_id)):
+    pool = request.app['pool']
+    if int(hex_to_id) in await hex_edges(pool, int(hex_from_id)):
         return web.json_response({"Connection": True})
     return web.json_response({"Connection": False})
 
