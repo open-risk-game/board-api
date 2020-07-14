@@ -1,6 +1,7 @@
 import os
 import aiomysql
 import logging
+import aiohttp_cors
 from aiohttp import web
 import models.board as board
 import models.hexagon as hexagon
@@ -29,7 +30,6 @@ app.on_startup.append(create_db_pool)
 app.add_routes([
         web.get('/v0/check-connection', hexagon.is_connected),
         web.get('/v0/get-hex', hexagon.get_hex),
-        web.get('/v0/get-board', board.get_board),
         web.get('/v0/get-turn', board.get_turn),
         web.patch('/v0/change-ownership', hexagon.change_ownership),
         web.patch('/v0/update-tokens', hexagon.update_tokens),
@@ -37,6 +37,18 @@ app.add_routes([
         web.post('/v0/create-board', board.create_board),
         web.post('/v0/create-hex', hexagon.create_hex),
         ])
+
+cors = aiohttp_cors.setup(app)
+resource = cors.add(app.router.add_resource("/v0/get-board"))
+route = cors.add(
+    resource.add_route("GET", board.get_board), {
+        "*": aiohttp_cors.ResourceOptions(
+            allow_credentials=True,
+            expose_headers=("X-Custom-Server-Header",),
+            allow_headers=("X-Requested-With", "Content-Type"),
+            max_age=3600,
+        )
+    })
 
 logging.basicConfig(
         filename="board.log",
