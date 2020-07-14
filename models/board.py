@@ -1,33 +1,40 @@
+import json
 import aiomysql
 from aiohttp import web
 import models.hexagon as hexagon
 
 
-async def get_board(request):
-    params = request.rel_url.query
-    board_id = params['id']
+async def get_hexagons(pool, board_id):
     query = '''
         SELECT id AS hex_id, owner AS player_id, tokens, x, y, playable
         FROM hex
         WHERE boardid = %s
     '''
-    pool = request.app['pool']
     async with pool.acquire() as db_conn:
         cursor = await db_conn.cursor(aiomysql.DictCursor)
         await cursor.execute(query, (board_id,))
         result = await cursor.fetchall()
-        for hex_item in result:
-            edges = await hexagon.hex_edges(
-                    request.app,
-                    hex_item.get('hex_id')
-                    )
-            hex_item['neighbors'] = edges
-        board_info = await get_board_information(pool, board_id)
-        output = {
-                'board-info': board_info,
-                'hexagons': result
-                }
-        return web.json_response(output)
+        return web.json_response(result)
+
+
+async def get_board(request):
+    pool = request.app['pool']
+    params = request.rel_url.query
+    board_id = params['id']
+    board_info = await get_board_information(pool, board_id)
+    hexagons = await get_hexagons(pool, board_id)
+    hexagons = json.loads(hexagons.text)
+    for hex_item in hexagons:
+        neighbors = await hexagon.hex_edges(
+                pool,
+                hex_item.get('hex_id')
+                )
+        hex_item['neighbors'] = neighbors
+    output = {
+            'board-info': board_info,
+            'hexagons': hexagons
+            }
+    return web.json_response(output)
 
 
 async def get_board_information(pool, board_id):

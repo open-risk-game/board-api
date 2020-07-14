@@ -11,9 +11,9 @@ async def is_connected(request):
     return web.json_response({"Connection": False})
 
 
-async def hex_edges(app, hex_id):
+async def hex_edges(pool, hex_id):
     query = f'SELECT hex_to FROM edge WHERE hex_from = {hex_id}'
-    async with app['pool'].acquire() as db_conn:
+    async with pool.acquire() as db_conn:
         cursor = await db_conn.cursor(aiomysql.DictCursor)
         await cursor.execute(query)
         result = await cursor.fetchall()
@@ -31,12 +31,13 @@ async def get_hex(request):
         FROM hex
         WHERE id = {hex_id}
     '''
-    async with request.app['pool'].acquire() as db_conn:
+    pool = request.app['pool'].acuire()
+    async with pool.acquire() as db_conn:
         cursor = await db_conn.cursor(aiomysql.DictCursor)
         await cursor.execute(query)
         result = await cursor.fetchone()
         if result is not None:
-            result['edges'] = await hex_edges(request.app, hex_id)
+            result['edges'] = await hex_edges(pool, hex_id)
             return web.json_response(result, status=200)
         else:
             message = {
@@ -99,7 +100,6 @@ async def update_tokens(request):
 
 async def create_hex(request):
     data = await request.json()
-    print('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
     owner = data.get('owner')
     tokens = data.get('tokens')
     x = data.get('x')
@@ -110,13 +110,6 @@ async def create_hex(request):
         INSERT INTO hex (owner, tokens, x, y, playable, boardid)
         VALUES (%s, %s, %s, %s, %s, %s)
     '''
-    print(owner)
-    print(tokens)
-    print(x)
-    print(y)
-    print(playable)
-    print(board_id)
-    print(query)
     async with request.app['pool'].acquire() as db_conn:
         cursor = await db_conn.cursor(aiomysql.DictCursor)
         await cursor.execute(
@@ -131,5 +124,4 @@ async def create_hex(request):
                 )
             )
         await db_conn.commit()
-        print(cursor)
     return web.json_response(text="hello", status=200)
