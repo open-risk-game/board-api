@@ -66,6 +66,26 @@ async def test_is_connected(pool):
 
 
 async def test_get_edges(pool):
-    app = {'pool': pool}
-    edges = await hexagon.hex_edges(app, 5)
+    hex_id = 5
+    edges = await hexagon.hex_edges(pool, hex_id)
     assert edges == [2, 3, 4, 6, 8, 9]
+
+
+async def test_get_hex(pool):
+    connected_url = FakeURL(
+            queries={
+                "id": 2
+                })
+    request = FakeRequest(app={'pool': pool}, url=connected_url)
+    response = await hexagon.get_hex(request)
+    actual = json.loads(response.text)
+    expected = {
+            "hex_id": 2,
+            "player_id": 1,
+            "tokens": 5,
+            "x": 0,
+            "y": 1,
+            "playable": 1,
+            "edges": [3, 4, 5]
+            }
+    assert expected == actual
