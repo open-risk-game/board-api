@@ -89,3 +89,15 @@ async def test_get_hex(pool):
             "edges": [3, 4, 5]
             }
     assert expected == actual
+
+
+async def test_change_ownership(pool):
+    data = {
+            "tokens": 500,
+            "hex_id": 1
+            }
+    request = FakeRequest(app={"pool": pool}, _json=data)
+    response = await hexagon.update_tokens(request)
+    actual = json.loads(response.text)
+    expected = {'result': 'updated hexagon-id 1'}
+    assert expected == actual
