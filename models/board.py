@@ -22,6 +22,8 @@ async def get_board(request):
     params = request.rel_url.query
     board_id = params['id']
     board_info = await get_board_information(pool, board_id)
+    if board_info.get('Error'):
+        return web.json_response(board_info, status=404)
     hexagons = await get_hexagons(pool, board_id)
     hexagons = json.loads(hexagons.text)
     for hex_item in hexagons:
@@ -45,6 +47,8 @@ async def get_board_information(pool, board_id):
     '''
     async with pool.acquire() as db_conn:
         cursor = await db_conn.cursor(aiomysql.DictCursor)
+        if cursor.rowcount == -1:
+            return {'Error': 'No board exists with that id'}
         await cursor.execute(query, (board_id,))
         result = await cursor.fetchone()
         result['created'] = str(result.get('created'))
