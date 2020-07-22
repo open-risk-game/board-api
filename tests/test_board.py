@@ -42,6 +42,15 @@ class FakeRequest:
         return self._json
 
 
+async def test_get_board_404(pool):
+    fake_url = FakeURL({"id": 2222})
+    fake_request = FakeRequest(app={'pool': pool}, url=fake_url)
+    response = await board.get_board(fake_request)
+    actual = json.loads(response.text)
+    expected = {'Error': 'No board exists with that id'}
+    assert expected == actual
+
+
 async def test_get_board_200(pool):
     fake_url = FakeURL({"id": 2})
     fake_request = FakeRequest(app={'pool': pool}, url=fake_url)
@@ -49,10 +58,8 @@ async def test_get_board_200(pool):
     expected = {
         "board-info": {
             "id": 2,
-            "description": None,
-            "created": "2020-07-17 16:58:59",
-            "playerAid": 1,
-            "playerBid": 2,
+            "description": "Test board",
+            "created": "2020-07-19 21:33:27",
             "playing": 2
         },
         "hexagons": [
