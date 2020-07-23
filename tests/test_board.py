@@ -87,9 +87,27 @@ async def test_get_board_200(pool):
             }
         ]
     }
-
     actual = json.loads(response.text)
     assert actual == expected
+
+
+async def test_get_board_info_200(pool):
+    board_id = 2
+    actual = await board.get_board_information(pool, board_id)
+    expected = {
+            'created': '2020-07-19 21:33:27',
+            'description': 'Test board',
+            'id': 2,
+            'playing': 2
+            }
+    assert expected == actual
+
+
+async def test_get_board_info_404(pool):
+    board_id = 125125125
+    actual = await board.get_board_information(pool, board_id)
+    expected = {'Error': 'No board exists with that id'}
+    assert expected == actual
 
 
 async def test_get_current_turn(pool):
