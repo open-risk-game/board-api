@@ -33,8 +33,8 @@ async def get_board(request):
                 )
         hex_item['neighbors'] = neighbors
     output = {
-            'board-info': board_info,
-            'hexagons': hexagons
+            'boardInfo': board_info,
+            'tiles': hexagons
             }
     return web.json_response(output)
 
