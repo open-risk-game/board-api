@@ -6,7 +6,7 @@ import models.hexagon as hexagon
 
 async def get_hexagons(pool, board_id):
     query = '''
-        SELECT id AS hex_id, owner AS player_id, tokens, x, y, playable
+        SELECT id, owner, tokens, x, y, playable
         FROM hex
         WHERE boardid = %s
     '''
@@ -29,7 +29,7 @@ async def get_board(request):
     for hex_item in hexagons:
         neighbors = await hexagon.hex_edges(
                 pool,
-                hex_item.get('hex_id')
+                hex_item.get('id')
                 )
         hex_item['neighbors'] = neighbors
     output = {
