@@ -14,17 +14,16 @@ Used when you wish to retrive the state of any given board.
 
 ``` json
 {
-    "board-info": {
+    "boardInfo": {
         "id": 1,
         "description": "Test board",
         "created": "2020-07-07 17:17:39",
-        "playerAid": 1,
-        "playerBid": 2,
+        "playing": 2,
     },
-    "hexagons": [
+    "tiles": [
         {
-            "hex_id": 111,
-            "player_id": 1,
+            "id": 111,
+            "owner": 1,
             "tokens": 5,
             "x": 0, 
             "y": 0,
@@ -32,8 +31,8 @@ Used when you wish to retrive the state of any given board.
             "neighbors": [112, 113],
         },
         {
-            "hex_id": 112,
-            "player_id": 2,
+            "id": 112,
+            "owner": 2,
             "tokens": 7,
             "x": 0,
             "y": 1,
@@ -41,8 +40,8 @@ Used when you wish to retrive the state of any given board.
             "neighbors": [111, 113],
         },
         {
-            "hex_id": 113,
-            "player_id": null,
+            "id": 113,
+            "owner": null,
             "tokens": 0,
             "x": 1,
             "y": 0,
@@ -79,7 +78,7 @@ Used when you wish to retrive the state of any given board.
 **Response**
 
 ```json
-{"Connection": "true"}
+{"Connection": "True"}
 ```
 
 #### Get which player is next to move
@@ -94,9 +93,9 @@ Used when you wish to retrive the state of any given board.
 
 #### Update board with next players turn
 
-`curl -X PATCH http://<host>v0/update-turn -d '{"id": 2, "next": 2}'`
+`curl -X PATCH http://<host>/v0/update-turn -d '{"id": 2, "next": 2}'`
 
-**Reponse**
+**Response**
 
 `{"next-player": 2}`
 
