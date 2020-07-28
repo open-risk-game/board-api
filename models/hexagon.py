@@ -26,11 +26,11 @@ async def hex_edges(pool, hex_id):
 
 async def get_hex(request):
     params = request.rel_url.query
-    hex_id = params['id']
+    tile_id = params['id']
     query = f'''
-        SELECT id AS hex_id, owner AS player_id, tokens, x, y, playable
+        SELECT id, owner, tokens, x, y, playable
         FROM hex
-        WHERE id = {hex_id}
+        WHERE id = {tile_id}
     '''
     pool = request.app['pool']
     async with pool.acquire() as db_conn:
@@ -38,11 +38,11 @@ async def get_hex(request):
         await cursor.execute(query)
         result = await cursor.fetchone()
         if result is not None:
-            result['edges'] = await hex_edges(pool, hex_id)
+            result['edges'] = await hex_edges(pool, tile_id)
             return web.json_response(result, status=200)
         else:
             message = {
-                    'error': f'Hexagon with id {hex_id} not found'
+                    'error': f'Hexagon with id {tile_id} not found'
                     }
             return web.json_response(message, status=404)
 
