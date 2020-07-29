@@ -79,7 +79,7 @@ async def update_tokens(request):
 
     query = f'''
     UPDATE hex
-    SET tokens = tokens + {tokens}
+    SET tokens = {tokens}
     WHERE id = {hex_id}
     '''
 
