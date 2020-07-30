@@ -48,6 +48,10 @@ async def get_board_information(pool, board_id):
     async with pool.acquire() as db_conn:
         cursor = await db_conn.cursor(aiomysql.DictCursor)
         await cursor.execute(query, (board_id,))
+        if cursor.rowcount == 0:
+            result = {'Error': 'No board exists with that id'}
+            db_conn.close()
+            return result
         result = await cursor.fetchone()
         result['created'] = str(result.get('created'))
         db_conn.close()
