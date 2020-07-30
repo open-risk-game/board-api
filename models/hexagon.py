@@ -21,7 +21,8 @@ async def hex_edges(pool, hex_id):
         edges = []
         for item in result:
             edges.append(item.get('hex_to'))
-        return edges
+        db_conn.close()
+    return edges
 
 
 async def get_hex(request):
@@ -39,12 +40,13 @@ async def get_hex(request):
         result = await cursor.fetchone()
         if result is not None:
             result['edges'] = await hex_edges(pool, hex_id)
-            return web.json_response(result, status=200)
+            status = 200
         else:
-            message = {
+            result = {
                     'error': f'Hexagon with id {hex_id} not found'
-                    }
-            return web.json_response(message, status=404)
+                   }
+        db_conn.close()
+    return web.json_response(result, status=status)
 
 
 async def change_ownership(request):
@@ -125,4 +127,5 @@ async def create_hex(request):
                 )
             )
         await db_conn.commit()
+        db_conn.close()
     return web.json_response(text="hello", status=200)
