@@ -1,7 +1,5 @@
 import os
 import json
-import pytest
-import aiomysql
 import models.board as board
 
 DB_HOST = os.environ.get('DB_HOST')
@@ -9,17 +7,6 @@ DB_PORT = os.environ.get('DB_PORT')
 DB_USER = os.environ.get('DB_USER')
 DB_PASS = os.environ.get('DB_PASS')
 DB_NAME = os.environ.get('DB_NAME')
-
-
-@pytest.fixture
-async def pool(loop):
-    async with aiomysql.create_pool(
-            host=DB_HOST,
-            port=int(DB_PORT),
-            user=DB_USER,
-            password=DB_PASS,
-            db=DB_NAME) as pool:
-        yield pool
 
 
 class FakeURL:
@@ -59,7 +46,6 @@ async def test_get_board_200(pool):
         "board-info": {
             "id": 2,
             "description": "Test board",
-            "created": "2020-07-19 21:33:27",
             "playing": 2
         },
         "hexagons": [
@@ -88,6 +74,7 @@ async def test_get_board_200(pool):
         ]
     }
     actual = json.loads(response.text)
+    del actual["board-info"]["created"]
     assert actual == expected
 
 
@@ -95,11 +82,11 @@ async def test_get_board_info_200(pool):
     board_id = 2
     actual = await board.get_board_information(pool, board_id)
     expected = {
-            'created': '2020-07-19 21:33:27',
             'description': 'Test board',
             'id': 2,
             'playing': 2
             }
+    del actual["created"]
     assert expected == actual
 
 
