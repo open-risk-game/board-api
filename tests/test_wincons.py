@@ -16,6 +16,10 @@ async def test_is_winner():
                 {"id": 645, "owner": 76},
                 ],
             }
+    expected = "playing"
+    actual = wincons.domination(board)
+    assert expected == actual
+    board["tiles"][2]["owner"] = 34
     expected = "game-over"
     actual = wincons.domination(board)
     assert expected == actual
