@@ -39,6 +39,28 @@ async def get_board(request):
     return web.json_response(output)
 
 
+async def test(request):
+    pool = request.app['pool']
+    params = request.rel_url.query
+    board_id = params['id']
+    board_info = await get_board_information(pool, board_id)
+    tiles = await get_hexagons(pool, board_id)
+    board = build_board_response(pool, board_info, tiles)
+    return web.json_response(board)
+
+
+async def build_board_response(pool, board_info, tiles):
+    for tile in tiles:
+        tile_id = tile.get('hex_id')
+        neighbors = await get_hexagons(pool, tile_id)
+        tile["neighbors"] = neighbors
+    board = {
+            "boardInfo": board_info,
+            "tiles": tiles
+            }
+    return board
+
+
 async def get_board_information(pool, board_id):
     query = '''
         SELECT id, description, created, playing
