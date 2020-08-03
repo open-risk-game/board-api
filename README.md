@@ -22,19 +22,19 @@ Used when you wish to retrive the state of any given board.
     "players": [
         {
             "id": 54,
-            "colour": #64232
+            "colour": "#64232",
             "wins": 0,
             "draws": 0,
             "loses": 0
         },
         {
             "id": 786,
-            "colour": #2362
+            "colour": "#236982",
             "wins": 0,
             "draws": 0,
             "loses": 0
         }
-    ]
+    ],
     "tiles": [
         {
             "id": 111,
