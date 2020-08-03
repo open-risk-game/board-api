@@ -1,4 +1,4 @@
-def domination(board):
+def domination(players, tiles):
     '''
         If any player owns zero tiles they have lost the game
 
@@ -6,9 +6,9 @@ def domination(board):
     '''
     status = "playing"
     bucket = {}
-    for player in board["boardInfo"]["players"]:
+    for player in players:
         bucket[player['id']] = 0
-    for tile in board["tiles"]:
+    for tile in tiles:
         if tile["owner"] in bucket:
             bucket[tile["owner"]] = bucket[tile["owner"]] + 1
     for player in bucket:

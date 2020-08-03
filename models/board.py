@@ -1,7 +1,6 @@
-import json
 import aiomysql
-import models.tile
 from aiohttp import web
+from lib.wincons import domination
 
 
 async def get_tiles(pool, board_id):
@@ -18,46 +17,51 @@ async def get_tiles(pool, board_id):
     return result
 
 
+async def get_players(pool, board_id):
+    query = '''
+        SELECT player.id, username, colour, wins, draws, losses
+        FROM player
+        INNER JOIN game ON
+            game.player_id = player.id
+            AND game.board_id = %s
+    '''
+    async with pool.acquire() as db_conn:
+        cursor = await db_conn.cursor(aiomysql.DictCursor)
+        await cursor.execute(query, (board_id,))
+        result = await cursor.fetchall()
+        db_conn.close()
+    return result
+
+
 async def get_board(request):
     pool = request.app['pool']
     params = request.rel_url.query
     board_id = params['id']
     board_info = await get_board_information(pool, board_id)
-    if board_info.get('Error'):
-        return web.json_response(board_info, status=404)
-    tiles = await get_tiles(pool, board_id)
-    for tile in tiles:
-        neighbors = await models.tile.tile_edges(
-                pool,
-                tile.get('id')
-                )
-        tile['neighbors'] = neighbors
-    output = {
-            'boardInfo': board_info,
-            'tiles': tiles
-            }
-    return web.json_response(output)
-
-
-async def test(request):
-    pool = request.app['pool']
-    params = request.rel_url.query
-    board_id = params['id']
-    board_info = await get_board_information(pool, board_id)
-    tiles = await get_tiles(pool, board_id)
-    board = build_board_response(pool, board_info, tiles)
+    players = await get_players(pool, board_id)
+    tiles = await get_tiles(
+            pool,
+            board_id
+            )
+    board = await build_board_response(
+            pool,
+            board_info,
+            tiles,
+            players
+            )
     return web.json_response(board)
 
 
-async def build_board_response(pool, board_info, tiles):
+async def build_board_response(pool, board_info, tiles, players):
+    board = {}
+    board["boardInfo"] = board_info
+    board["boardInfo"]["status"] = domination(players, tiles)
+    board["boardInfo"]["players"] = players
     for tile in tiles:
         tile_id = tile.get('id')
         neighbors = await get_tiles(pool, tile_id)
         tile["neighbors"] = neighbors
-    board = {
-            "boardInfo": board_info,
-            "tiles": tiles
-            }
+    board["tiles"] = tiles
     return board
 
 
