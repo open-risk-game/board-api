@@ -18,7 +18,7 @@ Used when you wish to retrive the state of any given board.
         "id": 1,
         "description": "Test board",
         "created": "2020-07-07 17:17:39",
-        "playing", 876,
+        "playing": 876,
     },
     "players": [
         {
