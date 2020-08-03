@@ -14,17 +14,31 @@ Used when you wish to retrive the state of any given board.
 
 ``` json
 {
-    "board-info": {
+    "boardInfo": {
         "id": 1,
         "description": "Test board",
         "created": "2020-07-07 17:17:39",
-        "playerAid": 1,
-        "playerBid": 2,
     },
-    "hexagons": [
+    "players": [
         {
-            "hex_id": 111,
-            "player_id": 1,
+            "id": 54,
+            "colour": #64232
+            "wins": 0,
+            "draws": 0,
+            "loses": 0
+        },
+        {
+            "id": 786,
+            "colour": #2362
+            "wins": 0,
+            "draws": 0,
+            "loses": 0
+        }
+    ]
+    "tiles": [
+        {
+            "id": 111,
+            "owner": 1,
             "tokens": 5,
             "x": 0, 
             "y": 0,
@@ -32,8 +46,8 @@ Used when you wish to retrive the state of any given board.
             "neighbors": [112, 113],
         },
         {
-            "hex_id": 112,
-            "player_id": 2,
+            "id": 112,
+            "owner": 2,
             "tokens": 7,
             "x": 0,
             "y": 1,
@@ -41,8 +55,8 @@ Used when you wish to retrive the state of any given board.
             "neighbors": [111, 113],
         },
         {
-            "hex_id": 113,
-            "player_id": null,
+            "id": 113,
+            "owner": null,
             "tokens": 0,
             "x": 1,
             "y": 0,
@@ -53,16 +67,16 @@ Used when you wish to retrive the state of any given board.
 }
 ```
 
-#### State of single hexagon
+#### State of single tile
 
-`curl http://<host>/v0/get-hex?id=2`
+`curl http://<host>/v0/get-tile?id=2`
 
 **Response**
 
 ```json
 {
-"hex_id": 111,
-"player_id": 1,
+"id": 111,
+"owner": 1,
 "tokens": 5,
 "x": 0,
 "y": 0,
@@ -72,7 +86,7 @@ Used when you wish to retrive the state of any given board.
 ```
 
 
-#### Check connection for between two hexagons
+#### Check connection for between two tiles
 
 `curl http://<host>/v0/check-connection?from=2&to=3`
 
