@@ -1,5 +1,6 @@
 import aiomysql
 from aiohttp import web
+from models.tile import tile_edges
 from lib.wincons import domination
 
 
@@ -38,6 +39,8 @@ async def get_board(request):
     params = request.rel_url.query
     board_id = params['id']
     board_info = await get_board_information(pool, board_id)
+    if board_info.get("Error"):
+        return web.json_response(board_info)
     players = await get_players(pool, board_id)
     tiles = await get_tiles(
             pool,
@@ -59,7 +62,7 @@ async def build_board_response(pool, board_info, tiles, players):
     board["boardInfo"]["players"] = players
     for tile in tiles:
         tile_id = tile.get('id')
-        neighbors = await get_tiles(pool, tile_id)
+        neighbors = await tile_edges(pool, tile_id)
         tile["neighbors"] = neighbors
     board["tiles"] = tiles
     return board
