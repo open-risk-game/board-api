@@ -1,10 +1,10 @@
 import os
-import aiomysql
 import logging
+import aiomysql
+import models.tile
 import aiohttp_cors
 from aiohttp import web
 import models.board as board
-import models.hexagon as hexagon
 
 
 DB_HOST = os.environ.get('DB_HOST')
@@ -28,14 +28,14 @@ app = web.Application()
 app.on_startup.append(create_db_pool)
 
 app.add_routes([
-        web.get('/v0/check-connection', hexagon.is_connected),
-        web.get('/v0/get-hex', hexagon.get_hex),
+        web.get('/v0/check-connection', models.tile.is_connected),
+        web.get('/v0/get-tile', models.tile.get_tile),
         web.get('/v0/get-turn', board.get_turn),
-        web.patch('/v0/change-ownership', hexagon.change_ownership),
-        web.patch('/v0/update-tokens', hexagon.update_tokens),
+        web.patch('/v0/change-ownership', models.tile.change_ownership),
+        web.patch('/v0/update-tokens', models.tile.update_tokens),
         web.patch('/v0/update-turn', board.update_turn),
         web.post('/v0/create-board', board.create_board),
-        web.post('/v0/create-hex', hexagon.create_hex),
+        web.post('/v0/create-tile', models.tile.create_tile),
         ])
 
 cors = aiohttp_cors.setup(app)

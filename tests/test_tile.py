@@ -1,5 +1,5 @@
 import json
-import models.hexagon as hexagon
+import models.tile
 
 
 class FakeURL:
@@ -28,7 +28,7 @@ async def test_is_connected(pool):
         "to": '2'
         })
     request = FakeRequest(app={'pool': pool}, url=connected_url)
-    connected_response = await hexagon.is_connected(request)
+    connected_response = await models.tile.is_connected(request)
     connected_actual = json.loads(connected_response.text)
     assert {"Connection": True} == connected_actual
 
@@ -40,28 +40,30 @@ async def test_is_connected(pool):
             app={'pool': pool},
             url=not_connected_url
             )
-    not_connected_response = await hexagon.is_connected(not_connected_request)
+    not_connected_response = await models.tile.is_connected(
+            not_connected_request
+            )
     not_connected_actual = json.loads(not_connected_response.text)
     assert {"Connection": True} == not_connected_actual
 
 
 async def test_get_edges(pool):
-    hex_id = 5
-    edges = await hexagon.hex_edges(pool, hex_id)
+    tile_id = 5
+    edges = await models.tile.tile_edges(pool, tile_id)
     assert edges == [2, 3, 4, 6, 8, 9]
 
 
-async def test_get_hex(pool):
+async def test_get_tile(pool):
     connected_url = FakeURL(
             queries={
                 "id": 2
                 })
     request = FakeRequest(app={'pool': pool}, url=connected_url)
-    response = await hexagon.get_hex(request)
+    response = await models.tile.get_tile(request)
     actual = json.loads(response.text)
     expected = {
-            "hex_id": 2,
-            "player_id": 1,
+            "id": 2,
+            "owner": 1,
             "tokens": 5,
             "x": 0,
             "y": 1,
@@ -74,10 +76,10 @@ async def test_get_hex(pool):
 async def test_change_ownership(pool):
     data = {
             "tokens": 500,
-            "hex_id": 1
+            "tile_id": 1
             }
     request = FakeRequest(app={"pool": pool}, _json=data)
-    response = await hexagon.update_tokens(request)
+    response = await models.tile.update_tokens(request)
     actual = json.loads(response.text)
-    expected = {'result': 'updated hexagon-id 1'}
+    expected = {'Result': 'Updated tile-id 1'}
     assert expected == actual

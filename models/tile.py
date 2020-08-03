@@ -4,16 +4,16 @@ from aiohttp import web
 
 async def is_connected(request):
     params = request.rel_url.query
-    hex_from_id = params['from']
-    hex_to_id = params['to']
+    tile_from_id = params['from']
+    tile_to_id = params['to']
     pool = request.app['pool']
-    if int(hex_to_id) in await hex_edges(pool, int(hex_from_id)):
+    if int(tile_to_id) in await tile_edges(pool, int(tile_from_id)):
         return web.json_response({"Connection": True})
     return web.json_response({"Connection": False})
 
 
-async def hex_edges(pool, hex_id):
-    query = f'SELECT hex_to FROM edge WHERE hex_from = {hex_id}'
+async def tile_edges(pool, tile_id):
+    query = f'SELECT hex_to FROM edge WHERE hex_from = {tile_id}'
     async with pool.acquire() as db_conn:
         cursor = await db_conn.cursor(aiomysql.DictCursor)
         await cursor.execute(query)
@@ -25,13 +25,13 @@ async def hex_edges(pool, hex_id):
     return edges
 
 
-async def get_hex(request):
+async def get_tile(request):
     params = request.rel_url.query
-    hex_id = params['id']
+    tile_id = params['id']
     query = f'''
-        SELECT id AS hex_id, owner AS player_id, tokens, x, y, playable
+        SELECT id, owner, tokens, x, y, playable
         FROM hex
-        WHERE id = {hex_id}
+        WHERE id = {tile_id}
     '''
     pool = request.app['pool']
     async with pool.acquire() as db_conn:
@@ -39,11 +39,11 @@ async def get_hex(request):
         await cursor.execute(query)
         result = await cursor.fetchone()
         if result is not None:
-            result['edges'] = await hex_edges(pool, hex_id)
+            result['edges'] = await tile_edges(pool, tile_id)
             status = 200
         else:
             result = {
-                    'error': f'Hexagon with id {hex_id} not found'
+                    'error': f'Hexagon with id {tile_id} not found'
                    }
         db_conn.close()
     return web.json_response(result, status=status)
@@ -52,11 +52,11 @@ async def get_hex(request):
 async def change_ownership(request):
     data = await request.json()
     player_id = data.get('player_id')
-    hex_id = data.get('hex_id')
+    tile_id = data.get('tile_id')
     query = f'''
         UPDATE hex
         SET owner = {player_id}
-        WHERE id = {hex_id}
+        WHERE id = {tile_id}
     '''
     async with request.app['pool'].acquire() as db_conn:
         cursor = await db_conn.cursor(aiomysql.DictCursor)
@@ -64,12 +64,12 @@ async def change_ownership(request):
         result = cursor.rowcount
         if result == -1:
             message = {
-                    'error': f'hex with id {hex_id} not found'
+                    'Error': f'Tile with id {tile_id} not found'
                     }
             return web.json_response(message, status=404)
         await db_conn.commit()
         message = {
-                'result': f'updated hex-id {hex_id}'
+                'Result': f'Updated tile-id {tile_id}'
                 }
         return web.json_response(message, status=200)
 
@@ -77,12 +77,12 @@ async def change_ownership(request):
 async def update_tokens(request):
     data = await request.json()
     tokens = data.get('tokens')
-    hex_id = data.get('hex_id')
+    tile_id = data.get('tile_id')
 
     query = f'''
     UPDATE hex
     SET tokens = {tokens}
-    WHERE id = {hex_id}
+    WHERE id = {tile_id}
     '''
 
     async with request.app['pool'].acquire() as db_conn:
@@ -91,17 +91,17 @@ async def update_tokens(request):
         result = cursor.rowcount
         if result == -1:
             message = {
-                    'error': f'hexagon with id {hex_id} not found'
+                    'Error': f'Tile with id {tile_id} not found'
                     }
             return web.json_response(message, status=404)
         await db_conn.commit()
         message = {
-                'result': f'updated hexagon-id {hex_id}'
+                'Result': f'Updated tile-id {tile_id}'
                 }
         return web.json_response(message, status=200)
 
 
-async def create_hex(request):
+async def create_tile(request):
     data = await request.json()
     owner = data.get('owner')
     tokens = data.get('tokens')

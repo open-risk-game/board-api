@@ -1,12 +1,12 @@
 import json
 import aiomysql
+import models.tile
 from aiohttp import web
-import models.hexagon as hexagon
 
 
-async def get_hexagons(pool, board_id):
+async def get_tiles(pool, board_id):
     query = '''
-        SELECT id AS hex_id, owner AS player_id, tokens, x, y, playable
+        SELECT id, owner, tokens, x, y, playable
         FROM hex
         WHERE boardid = %s
     '''
@@ -25,16 +25,16 @@ async def get_board(request):
     board_info = await get_board_information(pool, board_id)
     if board_info.get('Error'):
         return web.json_response(board_info, status=404)
-    hexagons = await get_hexagons(pool, board_id)
-    for hex_item in hexagons:
-        neighbors = await hexagon.hex_edges(
+    tiles = await get_tiles(pool, board_id)
+    for tile in tiles:
+        neighbors = await models.tile.tile_edges(
                 pool,
-                hex_item.get('hex_id')
+                tile.get('id')
                 )
-        hex_item['neighbors'] = neighbors
+        tile['neighbors'] = neighbors
     output = {
-            'board-info': board_info,
-            'hexagons': hexagons
+            'boardInfo': board_info,
+            'tiles': tiles
             }
     return web.json_response(output)
 
@@ -44,15 +44,15 @@ async def test(request):
     params = request.rel_url.query
     board_id = params['id']
     board_info = await get_board_information(pool, board_id)
-    tiles = await get_hexagons(pool, board_id)
+    tiles = await get_tiles(pool, board_id)
     board = build_board_response(pool, board_info, tiles)
     return web.json_response(board)
 
 
 async def build_board_response(pool, board_info, tiles):
     for tile in tiles:
-        tile_id = tile.get('hex_id')
-        neighbors = await get_hexagons(pool, tile_id)
+        tile_id = tile.get('id')
+        neighbors = await get_tiles(pool, tile_id)
         tile["neighbors"] = neighbors
     board = {
             "boardInfo": board_info,
@@ -121,4 +121,4 @@ async def create_board(request):
             return web.json_response({"error": "Check player IDs"})
         await db_conn.commit()
         board_id = cursor.lastrowid
-        return web.json_response({"board_id": board_id})
+        return web.json_response({"boardID": board_id})

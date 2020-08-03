@@ -36,15 +36,15 @@ async def test_get_board_200(pool):
     fake_request = FakeRequest(app={'pool': pool}, url=fake_url)
     response = await board.get_board(fake_request)
     expected = {
-        "board-info": {
+        "boardInfo": {
             "id": 2,
             "description": "Test board",
             "playing": 2
         },
-        "hexagons": [
+        "tiles": [
             {
-                "hex_id": 10,
-                "player_id": 1,
+                "id": 10,
+                "owner": 1,
                 "tokens": 5,
                 "x": 0,
                 "y": 0,
@@ -54,8 +54,8 @@ async def test_get_board_200(pool):
                 ]
             },
             {
-                "hex_id": 11,
-                "player_id": 2,
+                "id": 11,
+                "owner": 2,
                 "tokens": 9,
                 "x": 0,
                 "y": 1,
@@ -67,7 +67,7 @@ async def test_get_board_200(pool):
         ]
     }
     actual = json.loads(response.text)
-    del actual["board-info"]["created"]
+    del actual["boardInfo"]["created"]
     assert actual == expected
 
 
