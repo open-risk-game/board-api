@@ -39,7 +39,26 @@ async def test_get_board_200(pool):
         "boardInfo": {
             "id": 2,
             "description": "Test board",
-            "playing": 2
+            "playing": 2,
+            "status": "playing",
+            "players": [
+                {
+                    "id": 1,
+                    "username": "Billy-Bob",
+                    "colour": "#6ed173",
+                    "wins": 0,
+                    "draws": 0,
+                    "losses": 0,
+                    },
+                {
+                    "id": 2,
+                    "username": "Zanny-Zaz",
+                    "colour": "#fa6511",
+                    "wins": 0,
+                    "draws": 0,
+                    "losses": 0,
+                    }
+                ]
         },
         "tiles": [
             {
