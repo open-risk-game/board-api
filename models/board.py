@@ -137,5 +137,31 @@ async def create(request):
         Insert player into game table with the new board id.
         Return new board as JSON.
     """
+    data = await request.json()
+    player_id = data.get('player_id')
 
-    return web.json_response({"TODO": "Return new board"})
+    async with request.app['pool'].acquire() as db_conn:
+        board_query = "INSERT INTO board (playing) VALUES (%s)"
+        cursor = await db_conn.cursor()
+        await cursor.execute(board_query, (player_id))
+        board_id = cursor.lastrowid
+        await db_conn.commit()
+        db_conn.close()
+
+    async with request.app['pool'].acquire() as db_conn:
+        game_query = "INSERT INTO game (player_id, board_id) VALUES (%s, %s)"
+        cursor = await db_conn.cursor()
+        await cursor.execute(game_query, (player_id, board_id))
+        await db_conn.commit()
+        db_conn.close()
+
+    async with request.app['pool'].acquire() as db_conn:
+        game_query = """
+            INSERT INTO hex (player_id, board_id)
+            VALUES (%s, %s)"""
+        cursor = await db_conn.cursor()
+        await cursor.execute(game_query, (player_id, board_id))
+        await db_conn.commit()
+        db_conn.close()
+
+    return web.json_response({"last-row-id": board_id})
