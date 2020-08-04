@@ -36,6 +36,7 @@ app.add_routes([
         web.patch('/v0/update-turn', board.update_turn),
         web.post('/v0/create-board', board.create_board),
         web.post('/v0/create-tile', models.tile.create_tile),
+        web.post('/v0/create', board.create),
         ])
 
 cors = aiohttp_cors.setup(app)

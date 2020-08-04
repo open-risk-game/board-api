@@ -129,3 +129,13 @@ async def create_board(request):
         await db_conn.commit()
         board_id = cursor.lastrowid
         return web.json_response({"boardID": board_id})
+
+
+async def create(request):
+    """
+        Create new board on board table.
+        Insert player into game table with the new board id.
+        Return new board as JSON.
+    """
+
+    return web.json_response({"TODO": "Return new board"})
