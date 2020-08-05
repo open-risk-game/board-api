@@ -1,4 +1,5 @@
-FROM python:3.8-slim as build
+ARG TARGET_ARCH
+FROM ${TARGET_ARCH}python:3.8 as build
 WORKDIR /app
 
 ADD requirements .
