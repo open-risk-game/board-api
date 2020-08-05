@@ -180,7 +180,6 @@ async def create(request):
         cursor = await db_conn.cursor()
         await cursor.execute(new_tiles_query, (board_id))
         result = await cursor.fetchall()
-        print(result)
 
     async with request.app['pool'].acquire() as db_conn:
         edges_data = [
