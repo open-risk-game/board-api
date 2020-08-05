@@ -156,11 +156,64 @@ async def create(request):
         db_conn.close()
 
     async with request.app['pool'].acquire() as db_conn:
-        game_query = """
-            INSERT INTO hex (player_id, board_id)
-            VALUES (%s, %s)"""
+        tiles_data = [
+                (1, 0, 0, board_id),  # first row
+                (player_id, 5, 1, board_id),  # first row
+                (1, 0, 0, board_id),  # first row
+                (1, 0, 0, board_id),  # second row
+                (1, 0, 0, board_id),  # second row
+                (1, 0, 0, board_id),  # second row
+                (1, 0, 0, board_id),  # third row
+                (1, 0, 0, board_id),  # third row
+                (1, 0, 0, board_id),  # third row
+            ]
+        tiles_query = """
+            INSERT INTO hex (owner, tokens, playable, boardid)
+            VALUES (%s, %s, %s, %s)"""
         cursor = await db_conn.cursor()
-        await cursor.execute(game_query, (player_id, board_id))
+        await cursor.executemany(tiles_query, tiles_data)
+        await db_conn.commit()
+        db_conn.close()
+
+    async with request.app['pool'].acquire() as db_conn:
+        new_tiles_query = "SELECT * FROM hex WHERE boardid = %s"
+        cursor = await db_conn.cursor()
+        await cursor.execute(new_tiles_query, (board_id))
+        result = await cursor.fetchall()
+        print(result)
+
+    async with request.app['pool'].acquire() as db_conn:
+        edges_data = [
+                (result[1][0], result[2][0]),
+                (result[1][0], result[3][0]),
+                (result[1][0], result[4][0]),
+                (result[2][0], result[1][0]),
+                (result[2][0], result[4][0]),
+                (result[2][0], result[5][0]),
+                (result[3][0], result[1][0]),
+                (result[3][0], result[4][0]),
+                (result[3][0], result[7][0]),
+                (result[4][0], result[1][0]),
+                (result[4][0], result[2][0]),
+                (result[4][0], result[3][0]),
+                (result[4][0], result[5][0]),
+                (result[4][0], result[7][0]),
+                (result[4][0], result[8][0]),
+                (result[5][0], result[2][0]),
+                (result[5][0], result[4][0]),
+                (result[5][0], result[8][0]),
+                (result[7][0], result[3][0]),
+                (result[7][0], result[4][0]),
+                (result[7][0], result[8][0]),
+                (result[8][0], result[4][0]),
+                (result[8][0], result[5][0]),
+                (result[8][0], result[7][0]),
+            ]
+        edges_query = """
+            INSERT INTO edge (hex_from, hex_to)
+            VALUES ("%s", "%s")"""
+        cursor = await db_conn.cursor()
+        await cursor.executemany(edges_query, edges_data)
         await db_conn.commit()
         db_conn.close()
 
