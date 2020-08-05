@@ -113,29 +113,13 @@ async def update_turn(request):
         return web.json_response({'next-player': 'None'}, status=404)
 
 
-async def create_board(request):
-    data = await request.json()
-    player_A_id = data.get('a')
-    player_B_id = data.get('b')
-    query = f'''
-        INSERT INTO board (playerAid, playerBid)
-        VALUES ({player_A_id}, {player_B_id})
-    '''
-    async with request.app['pool'].acquire() as db_conn:
-        cursor = await db_conn.cursor()
-        await cursor.execute(query)
-        if cursor.lastrowid is None:
-            return web.json_response({"error": "Check player IDs"})
-        await db_conn.commit()
-        board_id = cursor.lastrowid
-        return web.json_response({"boardID": board_id})
-
-
 async def create(request):
     """
         Create new board on board table.
         Insert player into game table with the new board id.
-        Return new board as JSON.
+        Create new tiles for the new board
+        Select all the new tiles
+        Create edges between the new tiles
     """
     data = await request.json()
     player_id = data.get('player_id')
@@ -159,13 +143,13 @@ async def create(request):
         tiles_data = [
                 (1, 0, 0, board_id),  # first row
                 (player_id, 5, 1, board_id),  # first row
-                (1, 0, 0, board_id),  # first row
-                (1, 0, 0, board_id),  # second row
-                (1, 0, 0, board_id),  # second row
-                (1, 0, 0, board_id),  # second row
+                (1, 0, 1, board_id),  # first row
+                (1, 0, 1, board_id),  # second row
+                (1, 0, 1, board_id),  # second row
+                (1, 0, 1, board_id),  # second row
                 (1, 0, 0, board_id),  # third row
-                (1, 0, 0, board_id),  # third row
-                (1, 0, 0, board_id),  # third row
+                (1, 0, 1, board_id),  # third row
+                (1, 0, 1, board_id),  # third row
             ]
         tiles_query = """
             INSERT INTO hex (owner, tokens, playable, boardid)
@@ -180,6 +164,7 @@ async def create(request):
         cursor = await db_conn.cursor()
         await cursor.execute(new_tiles_query, (board_id))
         result = await cursor.fetchall()
+        db_conn.close()
 
     async with request.app['pool'].acquire() as db_conn:
         edges_data = [
@@ -210,10 +195,10 @@ async def create(request):
             ]
         edges_query = """
             INSERT INTO edge (hex_from, hex_to)
-            VALUES ("%s", "%s")"""
+            VALUES (%s, %s)"""
         cursor = await db_conn.cursor()
         await cursor.executemany(edges_query, edges_data)
         await db_conn.commit()
         db_conn.close()
 
-    return web.json_response({"last-row-id": board_id})
+    return web.json_response({"boardID": board_id})

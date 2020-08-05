@@ -34,7 +34,6 @@ app.add_routes([
         web.patch('/v0/change-ownership', models.tile.change_ownership),
         web.patch('/v0/update-tokens', models.tile.update_tokens),
         web.patch('/v0/update-turn', board.update_turn),
-        web.post('/v0/create-board', board.create_board),
         web.post('/v0/create-tile', models.tile.create_tile),
         web.post('/v0/create', board.create),
         ])
