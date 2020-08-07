@@ -122,7 +122,7 @@ async def create(request):
         Create edges between the new tiles
     """
     data = await request.json()
-    player_id = data.get('player_id')
+    player_id = data.get('playerID')
 
     async with request.app['pool'].acquire() as db_conn:
         board_query = "INSERT INTO board (playing) VALUES (%s)"
